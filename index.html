@@ -6,17 +6,16 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Убираем прокрутку у body */
+            overflow: hidden;
         }
         
         .fullscreen-frame {
-            width: 100vw;    /* 100% ширины viewport */
-            height: 100vh;   /* 100% высоты viewport */
-            border: none;    /* Убираем границу */
-            display: block;  /* Блочное отображение */
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            display: block;
         }
         
-        /* Скрываем заголовок */
         h1 {
             display: none;
         }
@@ -28,7 +27,55 @@
     <iframe 
         class="fullscreen-frame"
         src="https://bou1er.ru/sravnicar" 
-        title="Пример внешней страницы">
+        title="Пример внешней страницы"
+        sandbox="allow-scripts allow-forms allow-same-origin"
+        id="mainFrame">
     </iframe>
+
+    <script>
+        // Получаем фрейм
+        const frame = document.getElementById('mainFrame');
+        
+        // Обрабатываем загрузку фрейма
+        frame.onload = function() {
+            try {
+                // Получаем доступ к содержимому фрейма
+                const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                
+                // Находим все ссылки в фрейме
+                const links = frameDoc.querySelectorAll('a');
+                
+                // Для каждой ссылки добавляем атрибут target="_blank"
+                links.forEach(link => {
+                    if (link.href && !link.href.startsWith('javascript:')) {
+                        link.setAttribute('target', '_blank');
+                    }
+                });
+                
+                // Также обрабатываем клики по ссылкам
+                frameDoc.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'A' && e.target.href) {
+                        // Если ссылка ведет на другой домен, открываем в новой вкладке
+                        if (!e.target.href.includes(window.location.hostname)) {
+                            e.preventDefault();
+                            window.open(e.target.href, '_blank');
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                // Ошибка может возникнуть из-за политики CORS
+                console.log('Не удалось изменить ссылки в фрейме из-за CORS политики');
+            }
+        };
+        
+        // Альтернативный способ: перехватываем клики из фрейма
+        window.addEventListener('message', function(event) {
+            // Если получаем сообщение с URL, открываем его в новой вкладке
+            if (event.data && event.data.type === 'openInNewTab') {
+                window.open(event.data.url, '_blank');
+            }
+        });
+    </script>
 </body>
 </html>
