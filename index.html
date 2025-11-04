@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Пример iframe</title>
+    <title>Фрейм на весь экран</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Убираем прокрутку у body */
+        }
+        
+        .fullscreen-frame {
+            width: 100vw;    /* 100% ширины viewport */
+            height: 100vh;   /* 100% высоты viewport */
+            border: none;    /* Убираем границу */
+            display: block;  /* Блочное отображение */
+        }
+        
+        /* Скрываем заголовок */
+        h1 {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Страница с iframe</h1>
     
     <iframe 
+        class="fullscreen-frame"
         src="https://bou1er.ru/sravnicar" 
-        width="800" 
-        height="600" 
         title="Пример внешней страницы">
     </iframe>
 </body>
